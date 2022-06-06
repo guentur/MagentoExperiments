@@ -16,7 +16,7 @@ define([
             //call the incrementTime function to run on intialize
             this.incrementTime();
             this.subscribeToTime();
-            this.randomColour = ko.computed(function() {
+            this.randomColour = ko.pureComputed(function() {
                 //return the random colour value
                 return 'rgb(' + this.red() + ', ' + this.blue() + ', ' + this.green() + ')';
             }, this);
