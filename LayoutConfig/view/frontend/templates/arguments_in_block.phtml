@@ -1,0 +1,18 @@
+<?php
+/** @var Guentur\LayoutConfig\Block\HelloTemplate $block */
+$lesson_view_model = $block->getData('lesson_view_model');
+
+/** @var Guentur\LayoutConfig\ViewModel\LessonLogic $block */
+echo $lesson_view_model->getSomeString();
+
+$blockParamsArray = [
+    $lesson_view_model,
+    $block->getData('lesson_number_value'),
+    $block->getData('lesson_null_value'),
+    $block->getData('lesson_number_value'),
+    $block->getLessonStringValue(),
+    $block->getData('lesson_boolean_value'),
+    $block->getData('lesson_array_value'),
+];
+
+var_dump($blockParamsArray);
