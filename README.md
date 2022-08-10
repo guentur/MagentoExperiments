@@ -1,3 +1,3 @@
 # MageExperiments
 
-See [this article](https://inviqa.com/blog/using-knockout-js-magento-2)
+I will create modules here with my experiments and exercises for Magento.
