@@ -35,7 +35,7 @@ On the other hand — if your deployment procedure isn’t super tight, this mea
 ### My notices
 This URL is not working 
 ```
-http://magento.example.com/static/adminhtml/Magento/blank/en\_US/Pulsestorm\_FrontendTutorial1/hello.js
+http://magento.example.com/static/adminhtml/Magento/blank/en_US/Pulsestorm_FrontendTutorial1/hello.js
 ```
 because `Magento/blank` is not determined for adminhtml area. Magento uses `Magento/backend` theme for adminhtml, so we must use this URL:
 ```
