@@ -1,9 +1,7 @@
 # Guentur_PulsestormFrontendTutorial1
-
 My training practise by [this article](https://alanstorm.com/magento_2_adding_frontend_files_to_your_module/)
 
 ## Some interesting parts from the article mentioned above:
-
 Next up is the `web` folder.
 **Files in web are ones that will be served via http or https**. 
 Other folders at this level are:
@@ -35,7 +33,6 @@ On the other hand — if your deployment procedure isn’t super tight, this mea
 
 ---
 ### My notices
-
 This URL is not working 
 ```
 http://magento.example.com/static/adminhtml/Magento/blank/en\_US/Pulsestorm\_FrontendTutorial1/hello.js
