@@ -35,11 +35,11 @@ On the other hand — if your deployment procedure isn’t super tight, this mea
 ### My notices
 This URL is not working 
 ```
-http://magento.example.com/static/adminhtml/Magento/blank/en_US/Pulsestorm_FrontendTutorial1/hello.js
+http://magento.example.com/static/adminhtml/Magento/blank/en_US/Guentur_PulsestormFrontendTutorial1/hello.js
 ```
 because `Magento/blank` is not determined for adminhtml area. Magento uses `Magento/backend` theme for adminhtml, so we must use this URL:
 ```
-http://mage24.local/static/adminhtml/Magento/backend/en_US/Guentur_PulsestormFrontendTutorial1/hello.js
+http://magento.example.com/static/adminhtml/Magento/backend/en_US/Guentur_PulsestormFrontendTutorial1/hello.js
 ```
 But would magento loaded this static resource by first link if we defined `Magento/blank` as parent theme for `Magento/backend`?
 I know about Magento's `theme` table, but I am curious where we define area for theme.
