@@ -4,9 +4,13 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block template="Guentur_PulsestormJavascriptInitTutorial::content.phtml"
+            <block template="Guentur_PulsestormJavascriptInitTutorial::text-javascript.phtml"
                    class="Guentur\PulsestormJavascriptInitTutorial\Block\Main"
-                   name="guentur_pulsestormjavascriptinittutorial_block_main"/>
+                   name="guentur_block_text_javascript"/>
+
+            <block template="Guentur_PulsestormJavascriptInitTutorial::x-magento-init.phtml"
+                   class="Guentur\PulsestormJavascriptInitTutorial\Block\Main"
+                   name="guentur_block_x_magento_init"/>
 
             <block template="Guentur_PulsestormJavascriptInitTutorial::data-mage-init.phtml"
                    class="Guentur\PulsestormJavascriptInitTutorial\Block\Main"

@@ -1,7 +1,7 @@
 define([], function () {
     var mageJsComponent = function(config, node)
     {
-        alert("Look in your browser's console");
+        alert("From \"example\" JsComponent: Look in your browser's console");
         console.log(config);
         console.log(node);
         //alert(config);
