@@ -1,7 +1,9 @@
 define([], function () {
-    var mageJsComponent = function()
+    var mageJsComponent = function(config)
     {
-        alert("A simple magento component.");
+        alert("Look in your browser's console");
+        console.log(config);
+        //alert(config);
     };
 
     return mageJsComponent;
