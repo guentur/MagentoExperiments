@@ -7,6 +7,10 @@
             <block template="Guentur_PulsestormJavascriptInitTutorial::content.phtml"
                    class="Guentur\PulsestormJavascriptInitTutorial\Block\Main"
                    name="guentur_pulsestormjavascriptinittutorial_block_main"/>
+
+            <block template="Guentur_PulsestormJavascriptInitTutorial::data-mage-init.phtml"
+                   class="Guentur\PulsestormJavascriptInitTutorial\Block\Main"
+                   name="guentur_block_data_mage_init"/>
         </referenceContainer>
     </body>
 </page>
