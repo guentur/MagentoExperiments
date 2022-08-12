@@ -51,7 +51,7 @@ This works, and Magento itself often uses the x-magento-init method to invoke a 
 
 <script type="text/x-magento-init">
     {
-        "* ---> #one": {
+        "* ---> .foo": {
             "Guentur_PulsestormJavascriptInitTutorial/example":{"config":"value"}          
         }
     }        
