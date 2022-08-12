@@ -41,3 +41,22 @@ Magento will look at the _key_ of this object, and include it (the key) as a Req
 That’s what loading our `example.js` script.
 
 This works, and Magento itself often uses the x-magento-init method to invoke a RequireJS module as a **program**.
+
+---
+```
+<div id="one" class="foo">Hello World</div>
+<div id="two" class="foo">
+    Goodbye World
+</div>    
+
+<script type="text/x-magento-init">
+    {
+        "* ---> #one": {
+            "Guentur_PulsestormJavascriptInitTutorial/example":{"config":"value"}          
+        }
+    }        
+</script>
+```
+
+Here, we’ve changed the `*` to a `#one`. The `*` we used previously is actually a special case, 
+for programs that don’t need to operate on DOM nodes.
