@@ -99,16 +99,148 @@ Example:
 ```
 Reload the page with this template
 
+### No View Model
+Coming back to the `initialize.js` module, after Magento sets the custom template engine, 
+Magento calls KnockoutJS’s `applyBindings` method. 
+This kicks off rendering the current HTML page as a view.
+```js
+// File: vendor/magento/module-ui/view/base/web/js/lib/ko/initialize.js
+ko.setTemplateEngine(templateEngine);
+ko.applyBindings();
+```
+Magento called `applyBindings` **without** a view model.
 
+The key to understanding what Magento is doing here is back up in our KnockoutJS initialization
+```
+#File: vendor/magento/module-ui/view/base/web/js/lib/ko/initialize.js
+define([
+    //...
+    './bind/scope',
+    //...
+],
+```
+Magento’s KnockoutJS team created a custom KnockoutJS binding named `scope`.
+When you invoke the scope element like this 
+```html
+<li class="greet welcome" ==data-bind="scope: 'customer'"==>
+    <span data-bind="text: customer().fullname ? $t('Welcome, %1!').replace('%1', customer().fullname) : 'Default welcome msg!'"></span>
+</li>
+```
+Magento will apply the customer view model to this tag and its descendants.
 
+```
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Magento_Ui/js/core/app": {
+            "components": {
+                "customer": {
+                    "component": "Magento_Customer/js/view/customer"
+                }
+            }
+        }
+    }
+}
+</script>
+```
+As we know [from the first article in this series](http://alanstorm.com/knockoutjs_primer_for_magento_developers), 
+when Magento encounters a `text/x-magento-init` script tag with an `*` attribute, it will
+1.  Initialize the specified RequireJS module (`Magento_Ui/js/core/app`)
+2.  Call the function returned by that module, passing in the data object
 
+The `Magento_Ui/js/core/app` RequireJS module is a module that **instantiates KnockoutJS view models** to use with the `scope` attribute
 
+So, for the `customer` key, Magento will run code that’s equivalent to the following.
+```js
+//gross over simplification
+var ViewModelConstructor = requirejs('Magento_Customer/js/view/customer');
+var viewModel = new ViewModelConstructor;
+viewModelRegistry.save('customer', viewModel);
+```
 
+If we take a look at the implementation of the `scope` custom binding
+```js
+// #File: vendor/magento/module-ui/view/base/web/js/lib/ko/bind/scope.js
+define([
+    'ko',
+    'uiRegistry',
+    'jquery',
+    'mage/translate'
+], function (ko, registry, $) {
+    'use strict';
 
+    //...
+        update: function(el, valueAccessor, allBindings, viewModel, bindingContext) {
+            var component = valueAccessor(),
+                apply = applyComponents.bind(this, el, bindingContext);
 
+            if (typeof component === 'string') {
+                registry.get(component, apply);
+            } else if (typeof component === 'function') {
+                component(apply);
+            }
+        }
+    //...
 
+});
+```
+It’s the `registry.get(component, apply);` line that fetches the named view model from the view model registry,
+and then the following code is what actually applies the object as a view model in KnockoutJS
 
+```js
+// #File: vendor/magento/module-ui/view/base/web/js/lib/ko/bind/scope.js
 
+//the component variable is our viewModel
+function applyComponents(el, bindingContext, component) {
+    component = bindingContext.createChildContext(component);
+
+    ko.utils.extend(component, {
+        $t: i18n
+    });
+
+    ko.utils.arrayForEach(el.childNodes, ko.cleanNode);
+
+    ko.applyBindingsToDescendants(component, el);
+}
+```
+
+The `registry` variable comes from the `uiRegistry` module, which is an alias for the `Magento_Ui/js/lib/registry/registry` RequireJS module.
+```
+vendor/magento/module-ui/view/base/requirejs-config.js
+17:            uiRegistry:     'Magento_Ui/js/lib/registry/registry',
+```
+
+If you want to peek at the data available in a particular scope’s binding, the following debugging code should steer you straight.
+```html
+<li class="greet welcome" data-bind="scope: 'customer'">
+    <pre data-bind="text: ko.toJSON($data, null, 2)"></pre>            
+    <!-- ... -->
+</li>
+```
+
+If you’re one of the folks interested in diving into the **real** code that creates the view models 
+(and not our simplified pseudo-code above), you can start out in the `Magento_Ui/js/core/app` module.
+```js
+// #File: vendor/magento/module-ui/view/base/web/js/core/app.js
+define([
+    './renderer/types',
+    './renderer/layout',
+    'Magento_Ui/js/lib/ko/initialize'
+], function (types, layout) {
+    'use strict';
+
+    return function (data) {
+        types.set(data.types);
+        layout(data.components);
+    };
+});
+```
+
+This module has a dependency named `Magento_Ui/js/core/renderer/layout`. 
+It’s in this dependency module that Magento initializes the view models, and adds them to the view model registry.
+```
+#File: vendor/magento/module-ui/view/base/web/js/core/renderer/layout.js
+```
 
 
 
