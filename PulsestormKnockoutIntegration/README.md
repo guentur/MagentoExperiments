@@ -241,8 +241,52 @@ It’s in this dependency module that Magento initializes the view models, and a
 ```
 #File: vendor/magento/module-ui/view/base/web/js/core/renderer/layout.js
 ```
+### Changes in the 2.1 Release Candidate
+First off, KnockoutJS’s initialization now happens in the `Magento_Ui/js/lib/knockout/bootstrap` RequireJS module
+```
+#File: vendor/magento/module-ui/view/base/web/js/lib/knockout/bootstrap.js
+define([
+    'ko',
+    './template/engine',
+    'knockoutjs/knockout-es5',
+    './bindings/bootstrap',
+    './extender/observable_array',
+    './extender/bound-nodes',
+    'domReady!'
+], function (ko, templateEngine) {
+    'use strict';
 
+    ko.uid = 0;
 
+    ko.setTemplateEngine(templateEngine);
+    ko.applyBindings();
+});
+```
+
+Notice that Magento’s core developers moved all 
+the binding loading to an individual module `Magento_Ui/js/lib/knockout/bindings/bootstrap`, defined in
+```
+#File: vendor/magento/module-ui/view/base/web/js/lib/knockout/bindings/bootstrap.js
+```
+
+Finally, the “Magento Javascript Component” returned by `Magento_Ui/js/core/app` has a changed method signature 
+that includes a `merge` parameter, and the arguments to the `layout` function 
+make it clear `layout`‘s signature has changed as well.
+```
+#File: vendor/magento/module-ui/view/base/web/js/core/app.js
+define([
+    './renderer/types',
+    './renderer/layout',
+    '../lib/knockout/bootstrap'
+], function (types, layout) {
+    'use strict';
+
+    return function (data, merge) {
+        types.set(data.types);
+        layout(data.components, undefined, true, merge);
+    };
+});
+```
 
 
 
