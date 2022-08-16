@@ -5,7 +5,6 @@ titled _The Curious Case of Magento 2 Mixins_
 ## Some interesting parts from the article mentioned above
 
 ### What is a Mixin? Underscore library with Mixins functionality
-
 A “mixin” is, from one point of view, an alternative to traditional class inheritance. 
 Mixins date back [to lisp programming of the early/mid 1980s](https://en.wikipedia.org/wiki/Mixin#History).
 
@@ -82,8 +81,72 @@ there might be some folks who would call this a mixin due to the `uiClass`‘s i
 
 We’re now going to jump to a **completely** different topic, but keep all of the above in mind.
 
+### Mixins in Magento
+```
+//File: app/code/Pulsestorm/RequireJsRewrite/view/base/requirejs-config.js
+var config = {
+    'config':{
+        'mixins': {
+            'Magento_Customer/js/view/customer': {
+                'Pulsestorm_RequireJsRewrite/hook.js':true
+            }
+        }
+    }
+};    
+```
 
+You may be confused by the `mixins` configuration key.
+This is **not** a part of [standard RequireJS](http://requirejs.org/).
+This is a [special configuration flag](http://magento.stackexchange.com/questions/142826/how-are-the-things-magento-2-calls-mixins-implemented) 
+Magento introduced to their RequireJS system.
+Don’t let the word `mixins` confused you. This has (almost) **nothing** to do with the programming concept we [discussed earlier](#What_is_a_Mixin?_Underscore_library_with_Mixins_functionality). 
+It’s just a poorly chosen name.
 
+### Class Rewrites for Javascript
+One thing you could do with it os **replace** method implementations on RequireJS modules that return objects
+```js
+define([], function(){
+    'use strict';    
+    console.log("Called this Hook.");
+    return function(targetModule){
+        targetModule.someMethod = function(){
+            //replacement for `someMethod
+        }
+        return targetModule;
+    };
+});
+```
+
+Also, if the module in question returns a `uiClass` based object? 
+You could use `uiClass`‘s `extend` method to return a different class that extended the method, 
+but used `uiClass`‘s `_super()` feature to call the parent method.
+```js
+define([], function(){
+    'use strict';    
+    console.log("Called this Hook.");
+    return function(targetModule){
+        //if targetModule is a uiClass based object
+        return targetModule.extend({
+            someMethod:function()
+            {
+                var result = this._super(); //call parent method
+
+                //do your new stuff
+
+                return result;
+            }
+        });
+    };
+});
+```
+
+While multiple developers can all safely setup their own hooks, 
+they **can’t** all redefine the same method or function. 
+One person’s modifications will win out over the other person’s.
+
+Fortunately, Magento 2 has a solution for that in the `mage/utils/wrapper` module.
+
+### Wrapping Function Calls
 
 
 
