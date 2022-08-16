@@ -107,8 +107,10 @@ One thing you could do with it os **replace** method implementations on RequireJ
 ```js
 define([], function(){
     'use strict';    
+    
     console.log("Called this Hook.");
-    return function(targetModule){
+    
+    return function(targetModule) {
         targetModule.someMethod = function(){
             //replacement for `someMethod
         }
@@ -147,6 +149,83 @@ One person’s modifications will win out over the other person’s.
 Fortunately, Magento 2 has a solution for that in the `mage/utils/wrapper` module.
 
 ### Wrapping Function Calls
+The `mage/utils/wrapper` module allows for functionality similar to a 
+[Magento 2 backend around plugin](http://alanstorm.com/magento_2_object_manager_plugin_system/).
+
+Great thing about wrapping is, multiple people can do it.
+```js
+var example = {};
+example.foo = function (){
+    console.log("Called foo");
+}
+
+var wrapper = requirejs('mage/utils/wrapper');
+
+var wrappedFunction = wrapper.wrap(example.foo, function(originalFunction){        
+    console.log("Before");
+    originalFunction();
+    console.log("After");
+});
+
+//call wrapped function
+wrappedFunction();
+
+//change method definition to use wrapped function
+example.foo = wrappedFunction;
+
+var wrappedFunction2 = wrapper.wrap(wrappedFunction, function(originalFunction){
+    console.log("Before 2");
+    originalFunction();
+    console.log("After 2");
+});
+
+wrappedFunction2();
+```
+If you run the above code, you’ll see the following output
+```
+Before
+Called foo
+After
+
+Before 2
+Before
+Called foo
+After
+After 2
+```
+This means if you’re using it to replace method definitions, you can avoid the winner take all situation we described earlier.
+
+The wrap method accepts two arguments. The first is the original function you want to wrap. 
+The second is the function you want to wrap it with.
+The originalFunction parameter will be a reference to the function you’re trying to wrap (example.foo above). 
+The wrap method returns a function that, when called, will call your function.
 
 
+Consider the following “mixin” hook.
 
+```js
+define(['mage/utils/wrapper'], function(wrapper){
+    'use strict';    
+    console.log("Called this Hook.");
+    return function(targetModule){
+
+        var newFunction = targetModule.someFunction;
+        var newFunction = wrapper.wrap(newFunction, function(original){
+            //do extra stuff
+
+            //call original method
+            var result = original();    
+
+            //do extra stuff                
+
+            //return original value
+            return result;
+        });
+
+        targetModule.someFunction = newFunction;
+        return targetModule;
+    };
+});    
+```
+Here we’ve replaced the definition of `someFunction` with our wrapped function. 
+This technique also has the advantage of working with RequireJS modules that _return functions instead of objects_.
