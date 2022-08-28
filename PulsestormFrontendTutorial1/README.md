@@ -1,5 +1,5 @@
 # Guentur_PulsestormFrontendTutorial1
-My training practise by [this article](https://alanstorm.com/magento_2_adding_frontend_files_to_your_module/)
+My training practise by [this article](https://alanstorm.com/magento_2_adding_frontend_files_to_your_module/) titled "Magento 2: Adding Frontend Files to your Module". The 3rd article from series [Magento 2 for PHP MVC Developers](https://alanstorm.com/category/magento-2/#magento-2-mvc)
 
 ## Some interesting parts from the article mentioned above:
 Next up is the `web` folder.
