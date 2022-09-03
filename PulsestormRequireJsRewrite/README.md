@@ -103,7 +103,7 @@ Don’t let the word `mixins` confused you. This has (almost) **nothing** to do 
 It’s just a poorly chosen name.
 
 ### Class Rewrites for Javascript
-One thing you could do with it os **replace** method implementations on RequireJS modules that return objects
+One thing you could do with it is **replace** method implementations on RequireJS modules that return objects
 ```js
 define([], function(){
     'use strict';    
