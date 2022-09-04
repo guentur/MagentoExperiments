@@ -147,8 +147,49 @@ Magento often aliases its jQuery-widget-defining-RequireJS-modules. For example,
     "menu":                   "mage/menu",
 ```
 
+#### Sometimes Magento defies all convention
+Consider the [calendar widget](http://devdocs.magento.com/guides/v2.1/javascript-dev-guide/widgets/widget_calendar.html). 
+You might assume that the calendar widget is defined via a RequireJS module named `mage/calendar`. 
+They’d be right so far in that there’s a `lib/web/mage/calendar.js` file that Magento invokes as a RequireJS module named `mage/calendar`. 
+You can see an example of that here.
+```js
+//File: vendor/magento/module-ui/view/base/web/js/lib/knockout/bindings/datepicker.js
+define([
+    /* ... */
+    'mage/calendar'
+    /* ... */        
+],
+/* ... */
+```
 
+However, the `calendar.js` file is not actually a RequireJS module. 
+Instead, it’s an immediately invoked anonymous callback function that defines both the `mage.dateRange` and `mage.calendar` widget.
+```js
+//File: vendor/magento/magento2-base/lib/web/mage/calendar.js
 
+(function (factory) {
+    'use strict';
+
+    if (typeof define === 'function' && define.amd) {
+        define([
+            'jquery',
+            'jquery/ui',
+            'jquery/jquery-ui-timepicker-addon'
+        ], factory);
+    } else {
+        factory(window.jQuery);
+    }
+}(function ($) {
+    /* ... */
+    return {
+        dateRange:  $.mage.dateRange,
+        calendar:   $.mage.calendar
+    };        
+}));
+```
+This callback style allows a developer to use the `lib/web/mage/calendar.js` file as both a RequireJS module 
+_or_ as a bog-standard `<script src=""></script>` javascript include. 
+This comes at the cost of some confusion for developers coming [along later]() (i.e. us).
 
 
 
