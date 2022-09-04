@@ -191,5 +191,36 @@ This callback style allows a developer to use the `lib/web/mage/calendar.js` fil
 _or_ as a bog-standard `<script src=""></script>` javascript include. 
 This comes at the cost of some confusion for developers coming [along later]() (i.e. us).
 
+## Instantiating Widgets with Magento 2
+As we previously mentioned — when a developer calls the `jQuery.widget` method
 
+```
+$.widget('foo.someWidget', /*...*/);
+```
+
+they’re creating a widget’s definition — similar to a PHP/Java/C# developer defining a class. When a developer **uses** the widget
+
+```
+$(function(){
+    /* ... */
+    $('#someNode').someWidget(/*...*/);   
+});
+```
+
+they’re telling jQuery to use the `foo.someWidget` definition to create or _instantiate_ the widget, similar to how a PHP/Java/C# developer might instantiate an object from a class
+
+```php
+$object = new Object;
+```
+
+While it’s possible to use these Magento 2 defined widgets in the same way
+
+```js
+requirejs([
+    'jquery',
+    'mage/list'
+], function($, listWidget){
+    $('#some-node').list({/* ... config ... */});
+})
+```
 
