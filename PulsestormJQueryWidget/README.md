@@ -312,5 +312,29 @@ via `_super` and
 `_superApply` methods (
 see [the official docs](https://learn.jquery.com/jquery-ui/widget-factory/extending-widgets/#using-_super-and-_superapply-to-access-parents) for more information).
 
+#### Tricky case: Magento Widgets cannot be replaced as plain JQuery widgets
+That, unfortunately, is a problem for Magento. You’ll recall that, via the `data-mage-init` attribute,
+Magento allows you to instantiate a widget inline.
+```html
+<ul class="dropdown switcher-dropdown" data-mage-init='{"dropdownDialog":{
+        "appendTo":"#switcher-currency > .options",
+        "triggerTarget":"#switcher-currency-trigger",
+        "closeOnMouseLeave": false,
+        "triggerClass":"active",
+        "parentClass":"active",
+        "buttons":null}}'> 
+
+    <!-- ... -->
+    </ul>
+```
+The way this works is
+1.  Magento fetches the `dropdownDialog` RequireJS module
+2.  The `dropdownDialog` module uses jQuery.widget to define a widget
+3.  The `dropdownDialog` module returns the widget definition object
+4.  The Magento core code that implements `data-mage-init` uses the returned widget object to instantiate a widget
+
+In other words, the `data-mage-init` technique both **defines** and **instantiates** a widget in one go.
+
+As we learned earlier the `dropdownDialog` symbol is an alias for the `mage/dropdown` module, which lives in the file `./lib/web/mage/dropdown.js`. We could edit this file directly, or replace this file in our custom theme with one that had our changes.
 
 
