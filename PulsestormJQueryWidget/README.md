@@ -294,5 +294,23 @@ define([
 ```
 we see this module both defines, and then returns, the `mage.dropdownDialog` widget.
 
+### Replacing Widget Methods
+What’s tricky with Magento’s jQuery widgets is, they’re an object system **within** another object system. What we mean is, jQuery widgets by themselves have a simple and elegant method for replacing methods — you just redefine the widget using [the jQuery widget’s inheritance system](https://learn.jquery.com/jquery-ui/widget-factory/extending-widgets/)
+
+```
+jQuery.widget('namespace.methodName', {/* ... initial method definitions ... */});
+
+/* ... */
+
+jQuery.widget('namespace.methodName', jquery.namespace.methodName, 
+    {/*... new method definitions here ...*/});
+```
+
+So long as you redefine the widget **before instantiating** a widget instance, everything will work out great.
+The widget system even offers you the ability to call parent methods
+via `_super` and
+`_superApply` methods (
+see [the official docs](https://learn.jquery.com/jquery-ui/widget-factory/extending-widgets/#using-_super-and-_superapply-to-access-parents) for more information).
+
 
 
