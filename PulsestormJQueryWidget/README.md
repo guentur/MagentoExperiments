@@ -27,4 +27,59 @@ and [RequireJS](http://alanstorm.com/magento_2_and_requirejs/) articles
 in our [Magento 2 for PHP MVC developers series](http://alanstorm.com/category/magento-2/#magento-2-mvc), 
 and jQuery’s [five part Widget Factory series](https://learn.jquery.com/jquery-ui/widget-factory/).
 
+### What are JQuery Widgets?
+If you’re a **very** long time reader, 
+you might remember my pre-Magento [four](http://alanstorm.com/objective_c_selector/) 
+[part](http://alanstorm.com/objective_c_selector_part_2/) 
+[series](http://alanstorm.com/objective_c_selector_part_3/) 
+on [developing](http://alanstorm.com/objective_c_selector_part_4/) a jQuery plugin.
+
+The widget system is, on one level, just another javascript object system. 
+In jQuery, you create a widget definition with code that looks something like this
+```js
+jQuery.widget('ournamespace.ourPluginMethod', {
+    _create:function(){
+        //widget initilization code here, widget has
+        //access to things like this.options, this.element
+        //to access configuration and the matched dom node
+    },
+    hello:function(){
+        console.log("Say Hello");
+    }
+});
+```
+The above code would make a method named `ourPluginMethod` available for jQuery client programmers.
+```js
+//instantiate a widget instance
+jQuery('.some-node').ourPluginMethod({/* ... initial config ...*/});
+```
+
+When we call `jQuery.widget` — we’re creating a widget definition. 
+This is similar to creating a class definition file in a traditional object system. 
+When a developer says `jQuery('.some-node').ourPluginMethod`, 
+this is similar to a developer instantiating an object using a class definition file. 
+The jQuery widget system even allows you to call through to widget methods via a (slightly weird) API
+```js
+var widgetInstasnce = jQuery('#the-node').ourPluginMethod({/* ... initial config ...*/});
+
+//call the `hello` method
+widgetInstasnce.ourPluginMethod('hello');
+```
+
+#### JQuery Widget Namespace
+One of the more confusing things about widgets are the namespace — `ournamespace` below
+```
+jQuery.widget('ournamespace.ourPluginMethod',
+```
+
+If you peek at the global jQuery object, you’ll find your widget definition object stored under your namespace.
+```
+console.log(jQuery.ournamespace.ourPluginMethod)
+```
+
+Widgets are a complex system — if you’re going to customize how the default Magento theme(s) behave you’ll want to learn them inside and out. 
+However, the most important thing to understand about widgets is they’re just another javascript object system.
+
+
+
 
