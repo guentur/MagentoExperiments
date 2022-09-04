@@ -80,6 +80,75 @@ console.log(jQuery.ournamespace.ourPluginMethod)
 Widgets are a complex system — if you’re going to customize how the default Magento theme(s) behave you’ll want to learn them inside and out. 
 However, the most important thing to understand about widgets is they’re just another javascript object system.
 
+### Magento 2 and jQuery Widgets
+So, that’s plain jQuery widgets _without_ Magento. 
+Magento 2 offers users a [number of custom widgets built using the jQuery UI pattern](http://devdocs.magento.com/guides/v2.1/javascript-dev-guide/widgets/jquery-widgets-about.html).
+
+Magento _defines_ widgets inside RequireJS modules. 
+For example, Magento’s core code defines [the list widget](http://devdocs.magento.com/guides/v2.1/javascript-dev-guide/widgets/widget_list.html) in the `mage/list` module.
+```js
+//File: lib/web/mage/list.js
+define([
+    "jquery",
+    'mage/template',
+    "jquery/ui"
+], function($, mageTemplate){
+    "use strict";
+
+    $.widget('mage.list', {        /*...*/});
+    /*...*/
+    return $.mage.list;
+})
+```
+
+If you want to use the list widgets, you need to do something like this:
+```js
+requirejs([
+    'jquery',
+    'mage/list'
+], function($, listWidget){
+    $('#some-node').list({/* ... */});
+})
+```
+You’ll notice we never actually use the `listWidget` variable in our program.
+We need to **load** the `mage/list` module so that the widget gets defined directly in the jQuery object.
+
+There are times when the core code _strays_ from this simple “one widget, one RequireJS module” pattern. 
+For example, the [Menu](http://devdocs.magento.com/guides/v2.1/javascript-dev-guide/widgets/widget_menu.html) 
+and [Navigation](http://devdocs.magento.com/guides/v2.1/javascript-dev-guide/widgets/widget_navigation.html) widgets 
+are _both_ defined in the `mage/menu` RequireJS module.
+```js
+//File: vendor/magento/magento2-base/lib/web/mage/menu.js
+define([
+    "jquery",
+    "matchMedia",
+    "jquery/ui",
+    "jquery/jquery.mobile.custom",
+    "mage/translate"
+], function ($, mediaCheck) {
+    'use strict';
+
+    $.widget(/*...*/);
+
+
+    $.widget(/*...*/);
+
+    return {
+        menu: $.mage.menu,
+        navigation: $.mage.navigation
+    };
+});
+```
+
+The `mage/menu` module also offers another example of something to watch out for. 
+Magento often aliases its jQuery-widget-defining-RequireJS-modules. For example, you can see `mage/menu` aliased as `menu` here
+```js
+//File: vendor/magento/module-theme/view/frontend/requirejs-config.js
+    "menu":                   "mage/menu",
+```
+
+
+
 
 
 
