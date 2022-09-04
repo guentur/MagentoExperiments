@@ -193,14 +193,12 @@ This comes at the cost of some confusion for developers coming [along later]() (
 
 ## Instantiating Widgets with Magento 2
 As we previously mentioned — when a developer calls the `jQuery.widget` method
-
-```
+```js
 $.widget('foo.someWidget', /*...*/);
 ```
 
 they’re creating a widget’s definition — similar to a PHP/Java/C# developer defining a class. When a developer **uses** the widget
-
-```
+```js
 $(function(){
     /* ... */
     $('#someNode').someWidget(/*...*/);   
@@ -208,13 +206,11 @@ $(function(){
 ```
 
 they’re telling jQuery to use the `foo.someWidget` definition to create or _instantiate_ the widget, similar to how a PHP/Java/C# developer might instantiate an object from a class
-
 ```php
 $object = new Object;
 ```
 
 While it’s possible to use these Magento 2 defined widgets in the same way
-
 ```js
 requirejs([
     'jquery',
@@ -223,4 +219,80 @@ requirejs([
     $('#some-node').list({/* ... config ... */});
 })
 ```
+
+#### Magento 2 offers two new ways of instantiating widget objects
+the `data-mage-init` attributes, 
+and the `x-magento-init` script tags. 
+We covered both in our [Javascript Init Scripts](http://alanstorm.com/magento_2_javascript_init_scripts/) article. 
+It turns out that _both_ `data-mage-init` and the `x-magento-init` form _with_ a DOM node (not the `*` form) are _widget_ compatible.
+```html
+<div id="some-node" data-mage-init='{"mage/list":{/* ... config ... */}}'></div>
+```
+
+and it’s equivalent to
+
+```js
+$('#some-node').list({/* ... config ... */});    
+```
+
+This works because the `mage/list` module (and other Magento 2 “widget modules”) **returns** the widget callback that jQuery creates (`$.mage.list` below)
+
+```js
+//File: lib/web/mage/list.js
+define([
+    "jquery",
+    'mage/template',
+    "jquery/ui"
+], function($, mageTemplate){
+    "use strict";
+
+    $.widget('mage.list', {        /*...*/});
+    /*...*/
+    return $.mage.list;
+})
+```
+
+and the `data-mage-init` and `x-magento-init` techniques expect a RequireJS module that returns a function with the same signature as a jQuery widget callback. 
+
+> In fact, it’s probably safe to say that both `data-mage-init` and `x-magento-init` were designed to work with widgets initially, 
+> and it was only later that they were adopted (by the UI Component system, for one) 
+> as a way of invoking javascript with server side rendered JSON objects.
+
+Here’s one example from the home page
+```js
+<ul class="dropdown switcher-dropdown" data-mage-init='{"dropdownDialog":{
+        "appendTo":"#switcher-currency > .options",
+        "triggerTarget":"#switcher-currency-trigger",
+        "closeOnMouseLeave": false,
+        "triggerClass":"active",
+        "parentClass":"active",
+        "buttons":null}}'> 
+
+    <!-- ... -->
+    </ul>
+```
+This `data-mage-init` attribute invokes the `dropdownDialog` RequireJS module
+
+and if we look at the source for the `mage/dropdown` module
+```js
+//File: vendor/magento/magento2-base/lib/web/mage/dropdown.js
+define([
+    "jquery",
+    "jquery/ui",
+    "mage/translate"
+], function($){
+    'use strict';
+
+    var timer = null;
+    /**
+     * Dropdown Widget - this widget is a wrapper for the jQuery UI Dialog
+     */
+    $.widget('mage.dropdownDialog', $.ui.dialog, {/* ... */});
+
+    return $.mage.dropdownDialog;
+});
+```
+we see this module both defines, and then returns, the `mage.dropdownDialog` widget.
+
+
 
