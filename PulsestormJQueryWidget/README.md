@@ -337,4 +337,14 @@ In other words, the `data-mage-init` technique both **defines** and **instantiat
 
 As we learned earlier the `dropdownDialog` symbol is an alias for the `mage/dropdown` module, which lives in the file `./lib/web/mage/dropdown.js`. We could edit this file directly, or replace this file in our custom theme with one that had our changes.
 
+### Using Mixins to Redefine Widgets. Theory
+We’ve discussed [Magento’s “mixins” in a previous article](http://alanstorm.com/the-curious-case-of-magento-2-mixins/). 
+While this system allows developers [to implement mixins](https://en.wikipedia.org/wiki/Mixin) in Magento’s RequireJS modules, 
+the system itself is better thought of as a “RequireJS module-loader listener system”. 
 
+This system allows us, as developers, to
+1.  Set up a javascript function (via a RequireJS module) that Magento will call immediately after loading a specific RequireJS module
+2.  Magento will pass this function the value returned by that specific RequireJS module
+3.  Magento will **replace** that value by whatever our function returns.
+
+Using mixins, we can listen for Magento’s loading of a RequireJS widget loading module.
