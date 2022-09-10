@@ -57,6 +57,41 @@ This works, and Magento itself often uses the x-magento-init method to invoke a 
     }        
 </script>
 ```
-
 Here, we’ve changed the `*` to a `#one`. The `*` we used previously is actually a special case, 
 for programs that don’t need to operate on DOM nodes.
+The **key** for this object is actually a CSS/jQuery style selector 
+that tells Magento which DOM nodes the program 
+in `Pulsestorm_JavascriptInitTutorial/example` (`var mageJsComponent = function(config, ==node==)`) should operate on.
+
+### Magento JavaScript Components
+Magento itself often uses the `x-magento-init` method to invoke a RequireJS module as a program. However, the real power of `x-magento-init` is the ability to create a _Magento Javascript Component_.
+
+Magento Javascript Components are RequireJS modules that return a function. Magento’s system code will call this function in a specific way that exposes extra functionality.
+
+If that didn’t make sense, try changing your RequireJS module
+```js
+//File: app/code/Pulsestorm/JavascriptInitTutorial/view/frontend/web/simple-requirejs-module.js
+define([], function(){
+    alert("A simple RequireJS module");
+    return {};    
+});
+```
+so it matches the following:
+```js
+//File: app/code/Pulsestorm/JavascriptInitTutorial/view/frontend/web/example.js
+define([], function () {
+    var mageJsComponent = function()
+    {
+        alert("A simple magento component.");
+    };
+
+    return mageJsComponent;
+});
+```
+When we create a Magento Javascript Component, Magento calls the returned function **and** includes the object from `text/x-magento-init`.
+
+```
+"Pulsestorm_JavascriptInitTutorial/example":{"config":"value"}         
+```
+
+This is why the RequireJS module name is a key — the value of this object is the object we want to pass to our component.
