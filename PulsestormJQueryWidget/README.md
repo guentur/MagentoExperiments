@@ -348,3 +348,51 @@ This system allows us, as developers, to
 3.  Magento will **replace** that value by whatever our function returns.
 
 Using mixins, we can listen for Magento’s loading of a RequireJS widget loading module.
+Then, we can redefine the jQuery widget. Finally, we can return our newly instantiated widget definition.
+
+We’re going to redefine the `open` method on the `dropdownDialog` widget.
+```js
+//File: vendor/magento/magento2-base/lib/web/mage/dropdown.js
+
+$.widget('mage.dropdownDialog', $.ui.dialog, {
+    /* ... */
+    open: function () {
+        /* ... */
+    }
+    /* ... */        
+});
+```
+
+### Creating our Mixin. Practice
+I have defined mixin in my module using `requirejs-config.js` file:
+```js
+// File: Guentur/PulsestormJQueryWidget/view/base/requirejs-config.js
+var config = {
+    "config": {
+        "mixins": {
+            "mage/dropdown": {
+                'Guentur_PulsestormJQueryWidget/js/dropdown-blank-mixin':true
+            }
+        }
+    }
+};
+```
+There is it needs to be the real module name (`mage/dropdown`) in the `requirejs-config.js` and not the alias name (dropdownDialog).
+
+Then, create a `Guentur_PulsestormJQueryWidget/js/dropdown-blank-mixin` RequireJS module that matches the following.
+```js
+//File: app/code/Guentur/PulsestormJQueryWidget/view/base/web/js/dropdown-blank-mixin.js
+define(['jquery'], function(jQuery){
+    return function(originalWidget){
+        alert("Our mixin is hooked up.");
+        console.log("Our mixin is hooked up");
+
+        return originalWidget;
+    };
+});
+```
+We’ve imported the `jquery` module because we’ll need it later. 
+The RequireJS module returning a function 
+is how Magento’s javascript mixins are implemented. 
+The `originalWidget` parameter holds the original return value of `mage/dropdown`.
+
